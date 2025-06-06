@@ -30,8 +30,8 @@ python main.py
 - Desafio: Diferenças na escrita dos nomes entre o site e registros da prefeitura
 - Solução proposta:
   1. Baixar CSV com nomes dos bares do Comida di Buteco
-  2. Utilizar OpenStreetView API novamente (mais tolerante a variações de escrita)
-  3. Realizar join com a tabela existente usando coordenadas
+  2. Utilizar OpenStreetView API novamente (mais tolerante a variações de escrita) para pegar as coordenadas dos bares
+  3. Fazer o match por coordenadas
   4. Adicionar coluna booleana indicando participação no Comida di Buteco
 
 -----
@@ -40,5 +40,6 @@ python main.py
 | Dependência | Finalidade |
 | --- | --- |
 | dash-leaflet | Construção da interface Web |
+| geopy | Extração de dados geográficos dos bares/restaurantes |
 | pybind11 | Compilação da K-D Tree para um módulo Python |
 | bs4 | Web scraping para obtenção dos dados do [Comida di Buteco](https://comidadibuteco.com.br) |

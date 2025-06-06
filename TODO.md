@@ -1,13 +1,13 @@
-- Implementar tabela abaixo do mapa
-- Implementar seleção retangular:
-    - Usar EditControl para desenhar retângulos (e limpar)
-    - A cada retângulo, fazer o range search
-        - Adicionar os bares encontrados a uma lista
-    - Ao limpar, limpar a lista
-    - Renderizar bares da lista ativa na tabela
 - Comida de Buteco
-    - Baixar banco de dados
     - Cruzar informações -> como?
+        - Tentei usar o geopy e a API, mas só deu match em 16 dos 124...
+        - Antes tinha tentado cruzar por nome \<ou\> endereço -- 84 matches. Acho que é um número OK.
     - Append nos dados originais
     - Caso restaurante esteja no comida de buteco,
-        - Buscar informações sobre o prato concorrente...
+        - Mostrar popup com imagem do prato concorrente
+        - Highlight na tabela
+
+- Tabela
+    - "a data de início das atividades, se a empresa possui alvará de funcionamento, o endereço (formatado) e o nome (ou nome fantasia)"
+    - Como mostrar isso?
+    - Temos esses dados?
