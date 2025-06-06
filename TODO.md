@@ -1,0 +1,13 @@
+- Implementar tabela abaixo do mapa
+- Implementar seleção retangular:
+    - Usar EditControl para desenhar retângulos (e limpar)
+    - A cada retângulo, fazer o range search
+        - Adicionar os bares encontrados a uma lista
+    - Ao limpar, limpar a lista
+    - Renderizar bares da lista ativa na tabela
+- Comida de Buteco
+    - Baixar banco de dados
+    - Cruzar informações -> como?
+    - Append nos dados originais
+    - Caso restaurante esteja no comida de buteco,
+        - Buscar informações sobre o prato concorrente...

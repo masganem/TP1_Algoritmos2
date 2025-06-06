@@ -28,7 +28,7 @@ geojson_layer = dl.GeoJSON(
     id="bars-geojson",
     cluster=True,
     zoomToBoundsOnClick=True,
-    superClusterOptions={"radius": 140, "maxZoom": 10},
+    superClusterOptions={"radius": 140, "maxZoom": 14},
     options={"style": {"weight": 0}},
 )
 
