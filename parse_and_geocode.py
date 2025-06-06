@@ -2,11 +2,10 @@ import pandas as pd
 from geopy.geocoders import Nominatim
 from time import sleep
 
+SOURCE_DATA_PATH = "20250401_atividade_economica.csv"
 
-economic_data = pd.read_csv("20250401_atividade_economica.csv", sep = ";")
+economic_data = pd.read_csv(SOURCE_DATA_PATH, sep = ";")
 cnaes = economic_data["DESCRICAO_CNAE_PRINCIPAL"].unique()
-len(cnaes)
-economic_data["CNAE_PRINCIPAL"].dtype
 #5611 é o código inicial de estabelecimentos alimentícios
 #Dentro desse código possuimos apenas 4 códigos, e desse 4, 3 se relacionam a bares e restaurantes.
 #A filtragem abaixo é feita para manter apenas os 3 códigos
@@ -16,7 +15,6 @@ filtered_bars_and_restaurants_data = economic_data[economic_data["CNAE_PRINCIPAL
    5611204.0,
    5611205.0,
 ])]
-filtered_bars_and_restaurants_data
 
 #O que ele quer dizer com alvará de funcionamento?
 
@@ -26,7 +24,6 @@ for index, row in filtered_bars_and_restaurants_data.iterrows():
    filtered_bars_and_restaurants_data.at[index, "address"] = address
    filtered_bars_and_restaurants_data.at[index, "useful_address"] = useful_address
 
-filtered_bars_and_restaurants_data.columns
 bars_and_restaurants = filtered_bars_and_restaurants_data[["DATA_INICIO_ATIVIDADE", "IND_POSSUI_ALVARA", "address", "useful_address", "NOME", "NOME_FANTASIA"]]
 bars_and_restaurants["NOME"] = bars_and_restaurants["NOME_FANTASIA"].fillna(
     bars_and_restaurants["NOME"]

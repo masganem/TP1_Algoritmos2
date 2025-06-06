@@ -1,18 +1,29 @@
 # Projeto de Análise de Dados de Estabelecimentos
 
-## O que foi feito até agora
+## Executando
+```bash
+pip install -r requirements.txt
+python compile.py build_ext --inplace
+python main.py
+```
 
-### Location Data Parser
+### Location Data Parser (`parse_and_geocode.py`)
 - Puxa dados dos estabelecimentos da prefeitura
 - Limpa os dados para manter apenas restaurantes e bares
 - Utiliza a API do OpenStreetView para obter coordenadas geográficas a partir do endereço
 - Utiliza o dataframe `useful_bars_dataset` (formato simplificado do endereço para melhor compatibilidade com a API)
 - Necessário cruzar com a tabela `final_bars_and_restaurants` e remover a coluna `useful_address`
 
-### Status das Coordenadas
+### Geocoding (`parse_and_geocode.py`)
 - A função de obtenção de coordenadas já foi executada
-- Output salvo em `geocoded_bars_and_restaurantes.csv`
+- Output salvo em `geocoded_bars_and_restaurants.csv`
 - Observação: Alguns estabelecimentos não tiveram suas coordenadas obtidas, mas a maioria dos registros está completa
+
+### Implementação da KD-Tree (`kd_tree.cpp`)
+- Construtor recebe lista de coordenadas (`vector<pair<latitude, longitude>>`)
+- Ordenação in-place (complexidade: O(n log²(n)))
+- Método público para range search com 4 parâmetros (limites de latitude e longitude)
+- O módulo é compilado para Python com a ajuda do script `compile.py`
 
 ### Próximos Passos - Comida di Buteco
 - Necessário cruzar com dados do Comida di Buteco
@@ -23,15 +34,10 @@
   3. Realizar join com a tabela existente usando coordenadas
   4. Adicionar coluna booleana indicando participação no Comida di Buteco
 
-### Implementação da KD-Tree
-Localizada em `scratch.cpp`:
-- Construtor recebe lista de coordenadas (`vector<pair<latitude, longitude>>`)
-- Ordenação in-place (complexidade: O(n log²(n)))
-- Método público para range search com 4 parâmetros (limites de latitude e longitude)
+-----
 
-#### Como usar a KD-Tree
-1. Inicializar com construtor no início do programa
-2. Alternativa: Salvar estrutura já montada
-3. Para eventos de seleção no mapa:
-   - Chamar função C++ passando coordenadas do quadrado
-   - Receber resultado em Python (sugestão: lista de tuplas) 
+### Justificativa das dependências utilizadas:
+| Dependência | Finalidade |
+| --- | --- |
+| dash-leaflet | Construção da interface Web |
+| pybind11 | Compilação da K-D Tree para um módulo Python |
