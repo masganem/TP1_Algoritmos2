@@ -41,3 +41,4 @@ python main.py
 | --- | --- |
 | dash-leaflet | Construção da interface Web |
 | pybind11 | Compilação da K-D Tree para um módulo Python |
+| bs4 | Web scraping para obtenção dos dados do [Comida di Buteco](https://comidadibuteco.com.br) |
