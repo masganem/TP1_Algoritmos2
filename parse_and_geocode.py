@@ -2,7 +2,7 @@ import pandas as pd
 from geopy.geocoders import Nominatim
 from time import sleep
 
-SOURCE_DATA_PATH = "20250401_atividade_economica.csv"
+SOURCE_DATA_PATH = "data/20250401_atividade_economica.csv"
 
 economic_data = pd.read_csv(SOURCE_DATA_PATH, sep = ";")
 cnaes = economic_data["DESCRICAO_CNAE_PRINCIPAL"].unique()
@@ -16,8 +16,6 @@ filtered_bars_and_restaurants_data = economic_data[economic_data["CNAE_PRINCIPAL
    5611205.0,
 ])]
 
-#O que ele quer dizer com alvará de funcionamento?
-
 for index, row in filtered_bars_and_restaurants_data.iterrows():
    address = f"{row['DESC_LOGRADOURO']} {row['NOME_LOGRADOURO']}, {row['NUMERO_IMOVEL']}, {row['COMPLEMENTO']}, {row['NOME_BAIRRO']}, Belo Horizonte, Minas Gerais, Brasil"
    useful_address = f"{row['DESC_LOGRADOURO']} {row['NOME_LOGRADOURO']}, {row['NUMERO_IMOVEL']}, {row['NOME_BAIRRO']}, Belo Horizonte, Minas Gerais, Brasil"
@@ -28,8 +26,7 @@ bars_and_restaurants = filtered_bars_and_restaurants_data[["DATA_INICIO_ATIVIDAD
 bars_and_restaurants["NOME"] = bars_and_restaurants["NOME_FANTASIA"].fillna(
     bars_and_restaurants["NOME"]
 )
-final_bars_and_restaurants = bars_and_restaurants.drop(["NOME_FANTASIA", "useful_address"], axis = 1)
-useful_bars_dataset = bars_and_restaurants.drop(["NOME_FANTASIA", "DATA_INICIO_ATIVIDADE", "IND_POSSUI_ALVARA"], axis = 1)
+useful_bars_dataset = bars_and_restaurants.drop(["NOME_FANTASIA"], axis = 1)
 geolocator = Nominatim(user_agent="my_geocoder_app")
 
 def geocode_address(address):
@@ -44,6 +41,8 @@ def geocode_address(address):
 latitudes = []
 longitudes = []
 
+useful_bars_dataset.to_csv("data/not_geocoded_bars_and_restaurants.csv", index=False, sep=";")
+
 for i, address in enumerate(useful_bars_dataset["useful_address"]):
     print(f"Geocoding {i+1}/{len(useful_bars_dataset)}: {address}")
     lat, lon = geocode_address(address)
@@ -54,4 +53,4 @@ for i, address in enumerate(useful_bars_dataset["useful_address"]):
 useful_bars_dataset["latitude"] = latitudes
 useful_bars_dataset["longitude"] = longitudes
 
-useful_bars_dataset.to_csv("geocoded_bars_and_restaurants.csv", index=False, sep=";")
+useful_bars_dataset.to_csv("data/geocoded_bars_and_restaurants.csv", index=False, sep=";")

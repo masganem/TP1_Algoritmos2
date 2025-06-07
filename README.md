@@ -33,22 +33,11 @@ python main.py
 
 ### Comida di Buteco (`comida_di_buteco/`)
 Os dados foram extraídos utilizando a biblioteca [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/). Vale observar que as "informações sobre o prato", conforme o enunciado, se limitam às imagens disponíveis na [galeria de restaurantes](https://comidadibuteco.com.br/butecos/belo-horizonte/) -- isso porque as páginas dos estabelecimentos específicos ([exemplo](https://comidadibuteco.com.br/buteco/amarelim-do-prado/)) não estão sendo carregadas desde (pelo menos) 03/07/2025.
+- **Casamento** (`comida_di_buteco/align_data.py`): aplica normalizações de string e tenta fazer um _join_ entre os endereços dos dados coletados (`butecos.csv`) e os dados da PBH com base em endereço e nome.
 ##### Próximos Passos
-- Cruzar informações -> como?
-    - Tentei usar o geopy e a API, mas só deu match em 16 dos 124...
-    - Antes tinha tentado cruzar por nome \<ou\> endereço -- 84 matches. Acho que é um número OK.
-- Append nos dados originais
 - Caso restaurante esteja no comida de buteco,
     - Mostrar popup com imagem do prato concorrente
     - Highlight na tabela
-- Desafio: Diferenças na escrita dos nomes entre o site e registros da prefeitura
-
-
-### Interface Gráfica
-##### Tabela
-- **Falta**: "a data de início das atividades, se a empresa possui alvará de funcionamento, o endereço (formatado) e o nome (ou nome fantasia)"
-    - Como mostrar isso?
-    - Temos esses dados?
 
 -----
 

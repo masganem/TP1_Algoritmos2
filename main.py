@@ -1,11 +1,18 @@
 import dash_leaflet as dl
 import dash_leaflet.express as dlx
 from dash import Dash, html, dash_table, Output, Input, State
-
+import pandas as pd
 from kd_tree import KDTree
 from utils import load_dataframe
 
-df = load_dataframe()
+# We lose about 3000 entries here -- that is, 3000 entries were not geocoded.
+df = pd.read_csv('data/geocoded_bars_and_restaurants_with_cdb_idx.csv', sep=";").dropna(subset=["lat", "lng"]).reset_index(drop=True)
+df["lat"] = pd.to_numeric(df["lat"], errors="coerce")
+df["lng"] = pd.to_numeric(df["lng"], errors="coerce")
+# We match 56 of 9471 entries (see comida_di_buteco/align_data.py)
+num_matches = (df["cdb_idx"] != -1).sum()
+print(f"Matched {num_matches} of {len(df)} PBH entries")
+
 tree = KDTree(df)
 
 features = [
@@ -13,6 +20,8 @@ features = [
         lat=row.lat,
         lon=row.lng,
         name=row.name,
+        data=row.data,
+        alvara=row.alvara,
         address=row.address,
         full_address=row.full_address,
     )
@@ -28,7 +37,7 @@ geojson_layer = dl.GeoJSON(
     id="bars-geojson",
     cluster=True,
     zoomToBoundsOnClick=True,
-    superClusterOptions={"radius": 140, "maxZoom": 14},
+    superClusterOptions={"radius": 140, "maxZoom": 15},
     options={"style": {"weight": 0}},
 )
 
@@ -66,11 +75,28 @@ table_component = dash_table.DataTable(
     columns=[
         {"name": "Nome", "id": "name"},
         {"name": "Endereço", "id": "full_address"},
+        {"name": "Data de Abertura", "id": "data"},
+        {"name": "Tem alvará?", "id": "alvara"},
     ],
     data=[],
     page_size=10,
     style_table={"overflowX": "auto", "maxHeight": "25vh", "overflowY": "auto"},
     style_cell={"textAlign": "left", "padding": "4px"},
+    style_data_conditional=[
+        {
+            "if": {"filter_query": "{cdb_idx} != -1"},
+            "backgroundColor": "#333333",  
+            "color": "#ffffff",            
+        },
+        {
+            "if": {"state": "active"},
+            "fontWeight": "bold",
+            "color": "inherit",
+            "backgroundColor": "revert-layer",
+            "outline": "none",
+            "borderColor": "inherit",
+        },
+    ],
 )
 
 app.layout = html.Div([
@@ -112,10 +138,17 @@ def update_selected_table(drawn_geojson):
     if not selected_indices:
         return []
 
-    selection_df = df.loc[list(selected_indices), ["full_address", "name", "lat", "lng"]].copy()
+    selection_df = df.loc[list(selected_indices), ["full_address", "name", "data", "alvara", "lat", "lng", "cdb_idx"]].copy()
 
     selection_df["full_address"] = selection_df["full_address"].str.replace(", nan", "", regex=False)
     selection_df["full_address"] = selection_df["full_address"].str.replace(", Belo Horizonte, Minas Gerais, Brasil", "", regex=False)
+
+    selection_df.loc[selection_df["cdb_idx"] != -1, "name"] = (
+        selection_df.loc[selection_df["cdb_idx"] != -1, "name"] + " 🍽️"
+    )
+
+    selection_df["is_restaurant"] = selection_df["cdb_idx"] != -1
+    selection_df = selection_df.sort_values(by="is_restaurant", ascending=False).drop(columns="is_restaurant")
 
     return selection_df.to_dict("records")
 
