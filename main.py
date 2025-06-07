@@ -1,6 +1,6 @@
 import dash_leaflet as dl
 import dash_leaflet.express as dlx
-from dash import Dash, html, dash_table, Output, Input, State
+from dash import Dash, html, dash_table, Output, Input, State, no_update
 import pandas as pd
 from kd_tree import KDTree
 from utils import load_dataframe
@@ -67,6 +67,7 @@ map_component = dl.Map(
     center=[-19.918476, -43.9532384],
     zoom=12,
     style={"height": "65vh", "width": "100%"},
+    id="map",
     attributionControl=False,
 )
 
@@ -154,23 +155,24 @@ def update_selected_table(drawn_geojson):
 
 @app.callback(
     Output("highlight-layer", "children"),
+    Output("map", "center"),
     Input("selected-bars-table", "active_cell"),
     State("selected-bars-table", "data"),
     prevent_initial_call=True,
 )
 def highlight_selected_marker(active_cell, table_data):
     if not active_cell or active_cell.get("row") is None:
-        return []
+        return [], no_update
 
     row_idx = active_cell["row"]
     if row_idx >= len(table_data):
-        return []
+        return [], no_update
 
     row = table_data[row_idx]
     lat = row.get("lat")
     lon = row.get("lng")
     if lat is None or lon is None:
-        return []
+        return [], no_update
 
     marker = dl.CircleMarker(
         center=[lat, lon],
@@ -181,7 +183,7 @@ def highlight_selected_marker(active_cell, table_data):
         fillOpacity=1.0,
     )
 
-    return [marker]
+    return [marker], [lat, lon]
 
 if __name__ == "__main__":
     app.run(debug=True)
