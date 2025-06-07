@@ -2,11 +2,11 @@ import dash_leaflet as dl
 import dash_leaflet.express as dlx
 from dash import Dash, html, dash_table, Output, Input, State
 
-from util import load_dataframe, build_kdtree, query_kdtree
+from kd_tree import KDTree
+from utils import load_dataframe
 
 df = load_dataframe()
-
-tree = build_kdtree(df)
+tree = KDTree(df)
 
 features = [
     dict(
@@ -105,7 +105,7 @@ def update_selected_table(drawn_geojson):
         min_lon, max_lon = min(lons), max(lons)
         min_lat, max_lat = min(lats), max(lats)
 
-        results = query_kdtree(tree, min_lat, max_lat, min_lon, max_lon)
+        results = tree.query(min_lat, max_lat, min_lon, max_lon)
         for _, _, idx in results:
             selected_indices.add(idx)
 

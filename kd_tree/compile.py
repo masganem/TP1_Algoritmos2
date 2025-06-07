@@ -18,8 +18,8 @@ cxx_flags = ["-std=c++17"]
 
 ext_modules = [
     Extension(
-        "kd_tree",                      # Module name (matches PYBIND11_MODULE)
-        ["kd_tree_module.cpp"],         # Source file(s)
+        "kd_tree_cpp",                      # Module name (matches PYBIND11_MODULE)
+        ["kd_tree/kd_tree.cpp"],         # Source file(s)
         include_dirs=[
             get_include(),              # pybind11 headers
         ],
@@ -51,7 +51,7 @@ class BuildExt(build_ext):
         build_ext.build_extensions(self)
 
 setup(
-    name="kd_tree",
+    name="kd_tree_cpp",
     version="0.0.1",
     author="pybind11",
     description="KD-Tree C++ extension exposed to Python via pybind11",

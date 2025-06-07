@@ -40,9 +40,9 @@ static void Build_kd_tree(std::vector<Point> &locations)
     sort_tree(locations, locations.begin(), locations.end(), 0);
 }
 
-class KDTree {
+class KDTreeCPP {
 public:
-    explicit KDTree(const std::vector<std::tuple<latitude, longitude, int>> &input)
+    explicit KDTreeCPP(const std::vector<std::tuple<latitude, longitude, int>> &input)
     {
         locations.reserve(input.size());
         for (const auto &t : input) {
@@ -105,15 +105,15 @@ private:
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(kd_tree, m)
+PYBIND11_MODULE(kd_tree_cpp, m)
 {
     m.doc() = "A simple 2-D KD-Tree with range search that stores (lat, lon, id)";
 
-    py::class_<KDTree>(m, "KDTree")
+    py::class_<KDTreeCPP>(m, "KDTreeCPP")
         .def(py::init<const std::vector<std::tuple<latitude, longitude, int>> &>(),
              py::arg("points"),
              "Create a KD-Tree from a list of (lat, lon, id) tuples.")
-        .def("range_search", &KDTree::range_search,
+        .def("range_search", &KDTreeCPP::range_search,
              py::arg("min_lat"), py::arg("max_lat"),
              py::arg("min_lon"), py::arg("max_lon"),
              "Return all points (lat, lon, id) inside the bounding box ([min_lat, max_lat], [min_lon, max_lon]).");
