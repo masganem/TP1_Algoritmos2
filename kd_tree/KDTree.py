@@ -1,4 +1,4 @@
-from .kd_tree_cpp import KDTreeCPP
+from kd_tree_cpp import KDTreeCPP
 
 class KDTree:
     def __init__(self, df):

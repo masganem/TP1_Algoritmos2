@@ -3,7 +3,7 @@
 ## Executando
 ```bash
 pip install -r requirements.txt
-python compile.py build_ext --inplace
+python kd_tree/compile.py build_ext --inplace
 python main.py
 ```
 
