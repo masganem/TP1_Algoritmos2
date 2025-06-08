@@ -1,0 +1,147 @@
+\documentclass[10pt,a4paper]{article}
+
+% Modern font setup
+\usepackage{fontspec}
+\usepackage{unicode-math}
+
+% Font selection
+\setmainfont{Fira Sans}
+\setsansfont{Fira Sans}
+\setmonofont[
+  UprightFont   = *,
+  BoldFont      = *-Bold,
+  ItalicFont    = *,    % <-- force regular to be used as “italic”
+  BoldItalicFont= *-Bold        % <-- or omit if you don’t need Bold Italic
+]{Fira Code}
+% \setmathfont{Fira Math} % trouble with some symbols...
+
+% Language and layout
+\usepackage[utf8]{inputenc} % optional with XeLaTeX, but safe
+\usepackage[brazil]{babel}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+
+% Good to keep
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{outlines}
+
+% Bibliography
+\usepackage[backend=biber,style=authoryear]{biblatex}
+\renewcommand*{\nameyeardelim}{\addcomma\space}
+
+\title{Relatório -- Trabalho Prático 1\vspace{0.25cm}\\ \Large Algoritmos 2}
+\author{{\bfseries Marcelo Ganem, Rafael Paniago, Pedro Loures }\vspace{0.075cm} \\ \texttt{\{marceloganem,rafaelpaniago,pedroloures\}@dcc.ufmg.br} \vspace{0.15cm}\\ Universidade Federal de Minas Gerais}
+\date{\today}
+
+\newcommand{\note}[1]{
+    \vspace{0.3cm}
+    \colorbox{blue!30}{
+            \begin{minipage}{0.4\textwidth}
+		    \ttfamily \footnotesize
+               #1
+            \end{minipage}
+        }
+    \vspace{0.3cm}
+}
+
+\setlength{\columnsep}{1cm} % or whatever you prefer
+\begin{document}
+
+\makeatletter
+% Title page, optional
+% \begin{titlepage}
+  % \centering
+  % \vspace*{5.5cm}
+    % {\Large \bfseries Above title \par}
+    % \vspace{1cm}
+    % {\Huge \bfseries \@title \par}
+  % \vspace{1cm}
+  % \vspace{0.5cm}
+  % {\Large \@author \par}
+  % \vspace{0.5cm}
+  % \vfill {\large \today\par}
+% \end{titlepage}
+
+\twocolumn
+\maketitle
+% \begin{abstract}
+    % This is the abstract.
+% \end{abstract}
+
+
+\section{Especificação do Problema}
+\label{specs}
+
+O código que acompanha este relatório implementa o \textbf{armazenamento e consulta de pontos geográficos}, bem como suas informações correspondentes -- pertinentes aos bares cadastrados na Prefeitura de Belo Horizonte e ao festival \textit{Comida di Buteco} -- em uma \textbf{árvore} \textbf{K-dimensional}.
+
+\subsection{Dados de entrada}
+\label{raw-data}
+
+A base de dados primária para a implementação é o relatório em formato \texttt{.csv} de localização das atividades econômicas cadastradas no município de Belo Horizonte disponibilizada mensalmente pela Secretaria Municipal da Fazenda da PBH\footnote{\url{https://dados.pbh.gov.br/dataset/atividades-economicas1}}.
+
+Adicionalmente, dados \textbf{não-estruturados} do festival \textit{Comida di Buteco}, disponíveis na lista de participantes do evento\footnote{\url{https://comidadibuteco.com.br/butecos/belo-horizonte}}, são necessários para a execução do exercício extra.
+
+Por fim, definimos a entrada do usuário como um \textbf{retângulo} sob o espaço bidimensional representado pelo mapa de Belo Horizonte.
+
+\subsection{Árvores K-Dimensionais}
+\label{kd-trees}
+O enunciado propõe a organização dos dados obtidos conforme latitude e longitude em uma árvore K-dimensional. Essa estrutura permite realizar buscas em intervalos ortogonais\footnote{Do inglês \textit{orthogonal range search.}} em tempo $O(\sqrt{n} + k)$ no caso bidimensional (para uma árvore com $n$ nós e retornando $k$ resultados) dado um processo de construção de custo $O(n \log n).  $\footnote{Na implementação ótima. A implementação utilizada aqui constrói a árvore em $O(n \log^2 n)$.}
+
+\subsection{Ferramentas}
+\label{tools}
+A implementação do trabalho na linguagem Python requer a OpenStreetMaps API\footnote{\url{https://www.openstreetmap.org/}} para obtenção de coordenadas geográficas correspondentes aos endereços dos dados primários e a biblioteca \textit{dash-leaflet}\footnote{\url{https://www.dash-leaflet.com/}} para a construção da interface gráfica. Todas as ferramentas adicionais utilizadas são explicitamente justificadas na Seção \ref{implementation}.
+
+
+\subsection{Requisitos}
+\label{requirements}
+A tarefa consiste em implementar uma interface web que permita ao usuário selecionar uma área retangular no mapa de Belo Horizonte e, por meio da busca intervalar na árvore K-dimensional, filtrar entre os restaurantes em uma determinada tabela.
+
+\subsubsection{Requisitos adicionais (\textit{Comida di Buteco})}
+Como uma tarefa opcional, dados do festival Comida di Buteco podem ser cruzados com os dados da tarefa principal, aumentando a interface web com um \textit{pop-up} dinâmico que exibe informações\footnote{Vale observar que as informações se limitam às imagens disponíveis na galeria de restaurantes -- isso porque as páginas dos estabelecimentos específicos não estão disponíveis desde (pelo menos) 03/06/2025.} sobre o prato concorrente de restaurantes participantes.
+
+\section{Implementação}
+\label{implementation}
+
+\subsection{Processamento de dados}
+\label{data}
+
+\subsubsection{Filtragem}
+\label{filtering}
+Um primeiro filtro seleciona somente as entradas de CNAE 5611201.0, 5611204.0 ou 5611205.0, correspondentes a bares e restaurantes. Então, descartamos as colunas excedentes, mantendo: nome, endereço -- formatado como uma única \textit{string}, data de início das atividades e um campo \textit{booleano} condicional à existência de um alvará emitido pela prefeitura.
+
+
+\subsubsection{Geolocalização}
+\label{geolocalization}
+Aumentamos os dados filtrados com coordenadas geográficas correspondentes ao endereço de cada bar utilizando a biblioteca \texttt{geopy}\footnote{\url{https://geopy.readthedocs.io/en/stable/}}. Assim, definimos os valores a serem utilizados para ordenação na árvore K-dimensional. 
+
+\subsubsection{Deduplicação}
+\label{deduplication}
+Deduplicamos os dados, tendo em vista a duplicação extensiva presente no conjunto original, em função do campo \texttt{NOME} da entrada (não processado).
+
+\subsubsection{Coleta e casamento (\textit{Comida di Buteco})}
+\label{cdb-scraping-and-matching}
+Os dados foram extraídos por meio de \textit{web scraping} utilizando a biblioteca \texttt{bs4}\footnote{\url{https://pypi.org/project/beautifulsoup4/}}. O casamento entre os dados do \textit{Comida di Buteco} e da PBH é feito com base em uma representação normalizada da forma \texttt{rua\#número}, e então desambiguado com base na contagem de palavras em comum no campo \texttt{NOME} -- também normalizado. Por \textit{normalização}, nos referimos à remoção de acentos, caracteres não alfanúmericos e palavras e sequências irrelevantes.
+
+
+\subsection{Árvores K-Dimensionais}
+\label{kd-trees-impl}
+A implementação da árvore para busca intervalar é feita em C++ e Python. Utilizamos a biblioteca \texttt{pybind11}\footnote{\url{https://github.com/pybind/pybind11}} para compilar o código da classe que implementa a árvore K-dimensional em C++, incluindo um método construtor $O(n \log^2$ $ n)$ e um método de consulta $O(\sqrt{n} + k)$. A implementação em Pyhton apresenta métodos equivalentes que invocam o método na classe original, e é incluída por conveniência.
+
+\subsection{Interface Web}
+\label{web}
+O aplicativo \textit{dash-leaflet} implementado apresenta um mapa e uma tabela que filtra constantemente os restaurantes sob a seleção retangular atual -- que pode ser iniciada pelo usuário clicando no botão correspondente no canto superior esquerdo. Adicionalmente, restaurantes participantes do \textit{Comida di Buteco} aparecem em destaque nas primeiras posições da tabela.
+
+Selecionar um restaurante na tabela ativa um marcador no mapa e centraliza a visualização atual no restaurante selecionado. Passar o mouse (\textit{hover}) no marcador de um restaurante participante do \textit{Comida di Buteco} ativa um \textit{pop-up} mostrando informações do restaurante e uma imagem do prato concorrente.
+
+\section{Considerações}
+\label{considerations}
+\begin{outline}[enumerate]
+        \1 A geolocalização de dados e a posterior filtragem por dados geolocalizados para \textit{display} no mapa causa uma perda de aproximadamente 3.000 entradas.
+        \1 Os critérios de casamento descritos na Subseção \ref{cdb-scraping-and-matching} casam 78 dos 124 restaurantes participantes com os dados deduplicados não geolocalizados, e 51 com os dados filtrados por geolocalização.
+        \1 A árvore é construída sempre que o servidor é incializado. Para otimização, uma ideia é armazenar a estrutura ordenada em disco -- essa solução é mais escalável para um número de entradas fora dos limites específicos deste trabalho.
+\end{outline}
+
+\end{document}
