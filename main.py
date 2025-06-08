@@ -294,4 +294,4 @@ def highlight_selected_marker(active_cell, table_data):
     return [marker], [lat, lon]
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8000, debug=False)
