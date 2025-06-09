@@ -45,6 +45,7 @@ for _, row in df.iterrows():
         # if its in the cdb, add extra information
         buteco_info = butecos_df.loc[butecos_df.index == row.cdb_idx]
         if not buteco_info.empty:
+            feature_data["name"] = buteco_info.iloc[0]['name']
             feature_data['image_url'] = buteco_info.iloc[0]['image_url']
             feature_data['details_url'] = buteco_info.iloc[0]['details_url']
             buteco_features.append(feature_data)
@@ -76,13 +77,13 @@ for feature in buteco_features:
         </small>
     </div>
     """
-    
+
     marker = dl.Marker(
         position=[feature['lat'], feature['lon']],
         children=[
             dl.Tooltip(
                 html.Div([
-                    html.H4(feature['name'], style={'margin': '5px 0', 'text-align': 'center'}),
+                    html.H4(display_name, style={'margin': '5px 0', 'text-align': 'center'}),
                     html.Img(
                         src=feature['image_url'],
                         style={'width': '180px', 'height': 'auto', 'margin': '5px 0', 'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto'}
@@ -95,7 +96,7 @@ for feature in buteco_features:
                     ),
                     html.Small(
                         feature['full_address'],
-                        style={'color': '#666', 'margin-top': '5px', 'display': 'block', 'text-align': 'center'}
+                        style={'color': '#666', 'margin-top': '5px', 'display': 'block', 'text-align': 'center', 'text-overflow': 'ellipsis', 'white-space': 'nowrap', 'overflow': 'hidden'}
                     )
                 ], style={'width': '200px', 'text-align': 'center'})
             ),
@@ -114,7 +115,7 @@ for feature in buteco_features:
                     ),
                     html.Small(
                         feature['full_address'],
-                        style={'color': '#666', 'margin-top': '5px', 'display': 'block', 'text-align': 'center'}
+                        style={'color': '#666', 'margin-top': '5px', 'display': 'block', 'text-align': 'center', 'text-overflow': 'ellipsis', 'white-space': 'nowrap', 'overflow': 'hidden'}
                     )
                 ], style={'width': '200px', 'text-align': 'center'})
             )
