@@ -1,5 +1,10 @@
 # Projeto de Análise de Dados de Estabelecimentos
 
+O projeto pode ser visitado em https://tp1-algoritmos2.onrender.com
+
+[mapa (1).webm](https://github.com/user-attachments/assets/f032e9ff-fe36-4a3b-bb0c-c60d4ca1100d)
+
+
 ## Executando
 ```bash
 pip install -r requirements.txt
