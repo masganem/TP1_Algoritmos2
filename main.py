@@ -83,7 +83,7 @@ for feature in buteco_features:
         children=[
             dl.Tooltip(
                 html.Div([
-                    html.H4(display_name, style={'margin': '5px 0', 'text-align': 'center'}),
+                    html.H4(feature['name'], style={'margin': '5px 0', 'text-align': 'center'}),
                     html.Img(
                         src=feature['image_url'],
                         style={'width': '180px', 'height': 'auto', 'margin': '5px 0', 'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto'}
