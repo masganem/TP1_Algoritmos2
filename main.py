@@ -45,6 +45,7 @@ for _, row in df.iterrows():
         # if its in the cdb, add extra information
         buteco_info = butecos_df.loc[butecos_df.index == row.cdb_idx]
         if not buteco_info.empty:
+            feature_data["name"] = buteco_info.iloc[0]['name']
             feature_data['image_url'] = buteco_info.iloc[0]['image_url']
             feature_data['details_url'] = buteco_info.iloc[0]['details_url']
             buteco_features.append(feature_data)
@@ -76,7 +77,7 @@ for feature in buteco_features:
         </small>
     </div>
     """
-    
+
     marker = dl.Marker(
         position=[feature['lat'], feature['lon']],
         children=[
@@ -95,7 +96,7 @@ for feature in buteco_features:
                     ),
                     html.Small(
                         feature['full_address'],
-                        style={'color': '#666', 'margin-top': '5px', 'display': 'block', 'text-align': 'center'}
+                        style={'color': '#666', 'margin-top': '5px', 'display': 'block', 'text-align': 'center', 'text-overflow': 'ellipsis', 'white-space': 'nowrap', 'overflow': 'hidden'}
                     )
                 ], style={'width': '200px', 'text-align': 'center'})
             ),
@@ -114,7 +115,7 @@ for feature in buteco_features:
                     ),
                     html.Small(
                         feature['full_address'],
-                        style={'color': '#666', 'margin-top': '5px', 'display': 'block', 'text-align': 'center'}
+                        style={'color': '#666', 'margin-top': '5px', 'display': 'block', 'text-align': 'center', 'text-overflow': 'ellipsis', 'white-space': 'nowrap', 'overflow': 'hidden'}
                     )
                 ], style={'width': '200px', 'text-align': 'center'})
             )
